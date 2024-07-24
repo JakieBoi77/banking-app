@@ -44,8 +44,6 @@ const AuthForm = ({ type }: { type: string }) => {
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
-
-      
       if (type === "sign-up") {
         const userData = {
           firstName: data.firstName!,
@@ -74,7 +72,7 @@ const AuthForm = ({ type }: { type: string }) => {
       }
 
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
