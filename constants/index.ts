@@ -1,4 +1,11 @@
-export const appName = "Money Manager";
+const appNames = [
+  "Money Manager",
+  "Sigma Savings",
+  "Peely Payments",
+  "Fortnight Funds",
+];
+
+export const appName = appNames[0];
 
 export const sidebarLinks = [
   {

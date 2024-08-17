@@ -1,3 +1,5 @@
+"use client;"
+
 import React, { useCallback, useEffect, useState } from 'react'
 import { Button } from './ui/button'
 import { useRouter } from 'next/navigation';
@@ -55,15 +57,27 @@ const PlaidLink = ({ user, variant }: PlaidLinkProps) => {
             Connect Bank
           </p>
         </Button>
+      ): variant === "right-sidebar" ? (
+        <Button onClick={() => open()} className="flex gap-2">
+          <Image
+            src="/icons/plus.svg"
+            width={20}
+            height={20}
+            alt="plus"
+          />
+          <h2 className="text-14 font-semibold text-gray-400">
+            Add Bank
+          </h2>
+        </Button>
       ): (
-        <Button onClick={() => open()} className="plaidlink-default">
+        <Button onClick={() => open()} className="sidebar-link">
           <Image
             src="/icons/connect-bank.svg"
             alt="Connect Bank"
             width={24}
             height={24}
           />
-          <p className="text-[16px] font-semibold text-black-2">
+          <p className="sidebar-label">
             Connect Bank
           </p>
         </Button>

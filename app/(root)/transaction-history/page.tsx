@@ -1,3 +1,4 @@
+import { BankDropDown } from '@/components/BankDropDown';
 import HeaderBox from '@/components/HeaderBox'
 import { Pagination } from '@/components/Pagination';
 import TransactionsTable from '@/components/TransactionsTable';
@@ -36,6 +37,7 @@ const TransactionHistory = async ({ searchParams: { id, page }}: SearchParamProp
           title="Transaction History"
           subtext="See your bank details and transactions."
         />
+        <BankDropDown accounts={accounts.data} />
       </div>
       <div className="space-y-6">
         <div className="transactions-account">

@@ -25,11 +25,20 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { signIn, signUp } from '@/lib/actions/user.actions';
 import PlaidLink from './PlaidLink';
+import { useAccountsContext } from '@/contexts/accounts-context';
+import { getAccount, getAccounts } from '@/lib/actions/bank.actions';
+import { useAccountContext } from '@/contexts/account-context';
+import { useUserContext } from '@/contexts/user-context';
 
 const AuthForm = ({ type }: { type: string }) => {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
+
+  const { accountsData, setAccountsData } = useAccountsContext();
+  const { account, setAccount } = useAccountContext();
+  const { currentUser, setCurrentUser } = useUserContext();
 
   const formSchema = authFormSchema(type);
 
@@ -43,6 +52,7 @@ const AuthForm = ({ type }: { type: string }) => {
  
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true);
+    setErrorMessage(null);
     try {
       if (type === "sign-up") {
         const userData = {
@@ -58,21 +68,29 @@ const AuthForm = ({ type }: { type: string }) => {
           password: data.password,
         }
         const newUser = await signUp(userData);
+        
+        setCurrentUser(newUser)
+        setAccountsData(await getAccounts({ userId: newUser.userId }))
+
         setUser(newUser);
       }
 
       if (type === "sign-in") {
-        const response = await signIn({
+        const userData = await signIn({
           email: data.email,
           password: data.password,
         })
-        if (response) {
+
+        setCurrentUser(userData)
+        setAccountsData(await getAccounts({ userId: userData.$id }));
+
+        if (userData) {
           router.push("/");
         }
       }
 
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      setErrorMessage(error.message)
     } finally {
       setIsLoading(false);
     }
@@ -188,6 +206,7 @@ const AuthForm = ({ type }: { type: string }) => {
                 label="Password"
                 placeholder="Enter your password"
               />
+              {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
               <div className="flex flex-col gap-4">
                 <Button type="submit" disabled={isLoading} className="form-btn">
                   {isLoading ? (

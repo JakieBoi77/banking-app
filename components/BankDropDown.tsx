@@ -14,14 +14,20 @@ import {
 } from "@/components/ui/select";
 import { formUrlQuery, formatAmount } from "@/lib/utils";
 
-export const BankDropdown = ({
+export const BankDropDown = ({
   accounts = [],
   setValue,
   otherStyles,
 }: BankDropdownProps) => {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [selected, setSeclected] = useState(accounts[0]);
+
+  let account = null;
+  if (searchParams.get("id")) {
+    account = accounts.find((account) => account.appwriteItemId === searchParams.get("id"))!;
+  }
+  
+  const [selected, setSeclected] = useState(account || accounts[0]);
 
   const handleBankChange = (id: string) => {
     const account = accounts.find((account) => account.appwriteItemId === id)!;
