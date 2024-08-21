@@ -1,21 +1,15 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
-
-import { cn, formUrlQuery } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { useAccount } from "@/contexts/account-context";
 
 export const BankTabItem = ({ account, appwriteItemId }: BankTabItemProps) => {
-  const searchParams = useSearchParams();
-  const router = useRouter();
+  const { setCurrentAccount } = useAccount();
+
   const isActive = appwriteItemId === account?.appwriteItemId;
 
-  const handleBankChange = () => {
-    const newUrl = formUrlQuery({
-      params: searchParams.toString(),
-      key: "id",
-      value: account?.appwriteItemId,
-    });
-    router.push(newUrl, { scroll: false });
+  const handleBankChange = async () => {
+    setCurrentAccount(account);
   };
 
   return (

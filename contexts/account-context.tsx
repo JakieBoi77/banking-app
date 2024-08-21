@@ -1,41 +1,37 @@
 "use client";
 
-import React, { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from "react";
 
-type AccountContextProviderProps = {
-  children: React.ReactNode;
-};
-
-type AccountData = {
-  data: Account;
-  transactions: Transaction[];
+type AccountContextType = {
+  currentAccount: Account | null;
+  setCurrentAccount: React.Dispatch<React.SetStateAction<Account | null>>
 }
 
-type AccountContext = {
-  account: AccountData | null;
-  setAccount: React.Dispatch<React.SetStateAction<AccountData | null>>;
-};
+const AccountContext = createContext<AccountContextType | null>(null);
 
-const AccountContext = createContext<AccountContext | null>(null);
+type AccountProviderProps = {
+  children: React.ReactNode;
+}
 
-const AccountContextProvider = ({ children }: AccountContextProviderProps) => {
-  const [account, setAccount] = useState<AccountData | null>(null);
+export const AccountProvider = ({children}: AccountProviderProps) => {
+  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
+
+  const value = {
+    currentAccount, setCurrentAccount
+  }
+
   return (
-    <AccountContext.Provider
-      value={{ account, setAccount }}
-    >
+    <AccountContext.Provider value={value}>
       {children}
     </AccountContext.Provider>
-  )
+  );
 }
 
-export default AccountContextProvider;
-
-export const useAccountContext = () => {
+export const useAccount = () => {
   const context = useContext(AccountContext);
   if (!context) {
     throw new Error(
-      "useAccountContext must be used within an AccountContextProvider"
+      "useAccount must be used within an AccountProvider"
     );
   }
   return context;

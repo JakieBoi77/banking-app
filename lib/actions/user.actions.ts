@@ -31,7 +31,7 @@ export const getUserInfo = async ({ userId }: getUserInfoProps) => {
   }
 }
 
-export const signIn = async ({ email, password }: signInProps) => {
+export const signIn = async ({ email, password }: SignInProps) => {
   try {
     const { account } = await createAdminClient();
 

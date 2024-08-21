@@ -7,6 +7,12 @@ declare type SearchParamProps = {
 
 // ========================================
 
+type AccountsData = {
+  accounts: Account[];
+  totalBanks: number;
+  totalCurrentBalance: number;
+}
+
 declare type SignUpParams = {
   firstName: string;
   lastName: string;
@@ -61,6 +67,7 @@ declare type Account = {
   subtype: string;
   appwriteItemId: string;
   shareableId: string;
+  transactions: Transaction[];
 };
 
 declare type Transaction = {
@@ -217,7 +224,7 @@ declare interface FooterProps {
 declare interface RightSidebarProps {
   user: User;
   transactions: Transaction[];
-  banks: Bank[] & Account[];
+  banks: Account[];
 }
 
 declare interface SiderbarProps {
@@ -294,7 +301,7 @@ declare interface getTransactionsByBankIdProps {
   bankId: string;
 }
 
-declare interface signInProps {
+declare interface SignInProps {
   email: string;
   password: string;
 }

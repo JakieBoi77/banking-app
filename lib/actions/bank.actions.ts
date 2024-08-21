@@ -23,34 +23,10 @@ export const getAccounts = async ({ userId }: getAccountsProps) => {
     // get banks from db
     const banks = await getBanks({ userId });
 
+    // get accounts by calling getAccount() for every bank
     const accounts = await Promise.all(
       banks?.map(async (bank: Bank) => {
-        // get each account info from plaid
-        const accountsResponse = await plaidClient.accountsGet({
-          access_token: bank.accessToken,
-        });
-        const accountData = accountsResponse.data.accounts[0];
-
-        // get institution info from plaid
-        const institution = await getInstitution({
-          institutionId: accountsResponse.data.item.institution_id!,
-        });
-
-        const account = {
-          id: accountData.account_id,
-          availableBalance: accountData.balances.available!,
-          currentBalance: accountData.balances.current!,
-          institutionId: institution.institution_id,
-          name: accountData.name,
-          officialName: accountData.official_name,
-          mask: accountData.mask!,
-          type: accountData.type as string,
-          subtype: accountData.subtype! as string,
-          appwriteItemId: bank.$id,
-          shareableId: bank.shareableId,
-        };
-
-        return account;
+        return await getAccount({ appwriteItemId: bank.$id });
       })
     );
 
@@ -103,6 +79,11 @@ export const getAccount = async ({ appwriteItemId }: getAccountProps) => {
       accessToken: bank?.accessToken,
     });
 
+    // sort transactions by date such that the most recent transaction is first
+    const allTransactions = [...transactions, ...transferTransactions ].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+
     const account = {
       id: accountData.account_id,
       availableBalance: accountData.balances.available!,
@@ -114,17 +95,12 @@ export const getAccount = async ({ appwriteItemId }: getAccountProps) => {
       type: accountData.type as string,
       subtype: accountData.subtype! as string,
       appwriteItemId: bank.$id,
+      shareableId: bank.shareableId,
+      transactions: allTransactions,
     };
 
-    // sort transactions by date such that the most recent transaction is first
-    const allTransactions = [...transactions, ...transferTransactions ].sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
 
-    return parseStringify({
-      data: account,
-      transactions: allTransactions,
-    });
+    return parseStringify(account);
   } catch (error) {
     console.error("An error occurred while getting the account:", error);
   }

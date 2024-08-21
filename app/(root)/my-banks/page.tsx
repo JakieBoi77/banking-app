@@ -1,12 +1,15 @@
+"use client"
+
 import BankCard from "@/components/BankCard";
 import HeaderBox from "@/components/HeaderBox"
-import { getAccounts } from "@/lib/actions/bank.actions";
-import { getLoggedInUser } from "@/lib/actions/user.actions";
+import { useAuth } from "@/contexts/user-context";
 
 const MyBanks = async () => {
-  const loggedIn = await getLoggedInUser();
-  const accounts = await getAccounts({ userId: loggedIn.$id });
-  if (!accounts) return;
+  const { currentUser, accountsData } = useAuth();
+
+  if (!currentUser) {
+    return;
+  }
 
   return (
     <section className="flex">
@@ -20,11 +23,11 @@ const MyBanks = async () => {
             Your cards
           </h2>
           <div className="flex flex-wrap gap-6">
-            {accounts && accounts.data.map((account: Account) => (
+            {accountsData && accountsData.accounts.map((account: Account) => (
               <BankCard
                 key={account.id}
                 account={account}
-                userName={loggedIn?.firstName}
+                userName={currentUser.firstName}
               />
             ))}
           </div>

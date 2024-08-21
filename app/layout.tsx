@@ -4,9 +4,8 @@ import type { Metadata } from "next";
 import { Inter, IBM_Plex_Serif } from "next/font/google";
 import "./globals.css";
 import { appName } from "@/constants";
-import AccountsContextProvider from "@/contexts/accounts-context";
-import AccountContextProvider from "@/contexts/account-context";
-import UserContextProvider from "@/contexts/user-context";
+import { AuthProvider } from "@/contexts/user-context";
+import { AccountProvider } from "@/contexts/account-context";
 
 const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
 const ibmPlexSerif = IBM_Plex_Serif({
@@ -30,13 +29,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <AccountsContextProvider>
-        <AccountContextProvider>
-          <UserContextProvider>
+      <AccountProvider>
+        <AuthProvider>
             <body className={`${inter.variable} ${ibmPlexSerif.variable}`}>{children}</body>
-          </UserContextProvider>
-        </AccountContextProvider>
-      </AccountsContextProvider>
+        </AuthProvider>
+      </AccountProvider>
     </html>
   );
 }
