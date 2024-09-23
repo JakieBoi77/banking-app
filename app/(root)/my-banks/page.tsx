@@ -4,7 +4,7 @@ import BankCard from "@/components/BankCard";
 import HeaderBox from "@/components/HeaderBox"
 import { useAuth } from "@/contexts/user-context";
 
-const MyBanks = async () => {
+const MyBanks = () => {
   const { currentUser, accountsData } = useAuth();
 
   if (!currentUser) {

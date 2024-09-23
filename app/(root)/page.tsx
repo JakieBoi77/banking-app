@@ -6,7 +6,7 @@ import RightSidebar from '@/components/RightSidebar';
 import TotalBalanceBox from '@/components/TotalBalanceBox';
 import { useAccount } from '@/contexts/account-context';
 import { useAuth } from '@/contexts/user-context';
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 
 const Home = ({ searchParams: { id, page } }: SearchParamProps) => {
   const { currentUser, accountsData, loading } = useAuth();

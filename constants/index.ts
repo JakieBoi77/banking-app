@@ -3,9 +3,13 @@ const appNames = [
   "Sigma Savings",
   "Peely Payments",
   "Fortnight Funds",
+  "Buckaroo Bank",
+  "Bankler",
+  "Pennywise",
+  "Wumbo"
 ];
 
-export const appName = appNames[0];
+export const appName = appNames[5];
 
 export const sidebarLinks = [
   {

@@ -9,7 +9,7 @@ type AuthContextType = {
   currentUser: User | null;
   accountsData: AccountsData | null;
   register: (userData: SignUpParams) => Promise<User>;
-  logIn: ({email, password}: SignInProps) => Promise<User>;
+  logIn: ({ email, password }: SignInProps) => Promise<User>;
   logOut: () => Promise<void>;
   loading: boolean;
 }
@@ -22,74 +22,71 @@ type AuthProviderProps = {
 }
 
 // Context Provider
-export const AuthProvider = ({children}: AuthProviderProps) => {
+export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [accountsData, setAccountsData] = useState<AccountsData | null>(null);
   const [loading, setLoading] = useState(true);
 
   const { setCurrentAccount } = useAccount();
-  
+
+  const checkAuthStatus = async () => {
+    try {
+      setLoading(true);
+
+      // Set current user to local context
+      const user = await getLoggedInUser();
+      if (!user) {
+        console.log("No User Found");
+        return;
+      }
+      setCurrentUser(user);
+
+      // Fetch user bank accounts and save them to local context
+      const accounts = await getAccounts({ userId: user.$id });
+      if (!accounts) {
+        return;
+      }
+      setAccountsData({
+        accounts: accounts.data,
+        totalBanks: accounts.totalBanks,
+        totalCurrentBalance: accounts.totalCurrentBalance,
+      });
+
+      // Set the first account
+      setCurrentAccount(accounts.data[0]);
+
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Update Context on load
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
+
   // Auth Handlers
   const register = async (userData: SignUpParams) => {
     const newUser = await signUp(userData);
     setCurrentUser(newUser);
+    checkAuthStatus();
     return newUser;
   }
 
-  const logIn = async ({email, password}: SignInProps) => {
+  const logIn = async ({ email, password }: SignInProps) => {
     const user = await signIn({ email, password });
     setCurrentUser(user);
+    checkAuthStatus();
     return user;
   }
-  
+
   const logOut = async () => {
     setCurrentUser(null);
     setAccountsData(null);
     await logoutAccount();
   }
-
-  // Update Context on load
-  useEffect(() => {
-    const checkAuthStatus = async () => {
-        try {
-            setLoading(true);
-
-            // Set current user to local context
-            console.log("Getting User")
-            const user = await getLoggedInUser();
-            if (!user) {
-              console.log("No User Found");
-              return;
-            }
-            console.log(user)
-            setCurrentUser(user);
-            
-            // Fetch user bank accounts and save them to local context
-            console.log("Fetching User Data");
-            const accounts = await getAccounts({ userId: user.$id });
-            if (!accounts) {
-              console.log("User Data Not Found");
-              return;
-            }
-            console.log(accounts)
-            setAccountsData({
-              accounts: accounts.data,
-              totalBanks: accounts.totalBanks,
-              totalCurrentBalance: accounts.totalCurrentBalance,
-            });
-
-            // Set the first account
-            console.log("Setting the first account")
-            setCurrentAccount(accounts.data[0]);
-
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
-    checkAuthStatus();
-  }, []);
 
   const value = {
     currentUser,

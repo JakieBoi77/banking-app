@@ -31,7 +31,7 @@ export default function RootLayout({
     <html lang="en">
       <AccountProvider>
         <AuthProvider>
-            <body className={`${inter.variable} ${ibmPlexSerif.variable}`}>{children}</body>
+          <body className={`${inter.variable} ${ibmPlexSerif.variable}`}>{children}</body>
         </AuthProvider>
       </AccountProvider>
     </html>
