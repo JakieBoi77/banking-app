@@ -11,6 +11,9 @@ import React from 'react'
 const Home = ({ searchParams: { id, page } }: SearchParamProps) => {
   const { currentUser, accountsData, loading } = useAuth();
   const { currentAccount } = useAccount();
+
+  console.log(currentUser);
+  console.log(accountsData);
   
   if (!currentUser || !accountsData || !currentAccount) {
     return;
