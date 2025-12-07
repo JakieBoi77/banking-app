@@ -7,29 +7,23 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18.x]
-
+    runs-on: self-hosted
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Pull latest code
+        run: |
+          cd ${{ secrets.DEPLOY_DIR }}
+          git pull
 
-      - name: Install SSH Client
+      - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y openssh-client
+          cd ${{ secrets.DEPLOY_DIR }}
+          npm install
 
-      - name: Setup SSH
+      - name: Build Next.js app
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-      
-      - name: Use SSH to Pull Changes and Build the App
-        run: |
-          ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.DEPLOY_DIR }} && git pull && npm install && npm run build && pm2 restart all"
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          cd ${{ secrets.DEPLOY_DIR }}
+          npm run build
+
+      - name: Restart PM2
+        run: pm2 restart all --silent
+
